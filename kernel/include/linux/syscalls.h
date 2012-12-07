@@ -63,7 +63,9 @@ struct getcpu_cache;
 struct old_linux_dirent;
 struct perf_event_attr;
 struct file_handle;
+struct prinfo;              /* added - red shirt team */
 
+#include <linux/prinfo.h>   /* added - red shirt team */
 #include <linux/types.h>
 #include <linux/aio_abi.h>
 #include <linux/capability.h>
@@ -844,4 +846,5 @@ asmlinkage long sys_open_by_handle_at(int mountdirfd,
 				      struct file_handle __user *handle,
 				      int flags);
 asmlinkage long sys_setns(int fd, int nstype);
+asmlinkage long sys_pinfo(struct prinfo *buf,int *nr);  /* added - red shirt team */
 #endif

@@ -352,10 +352,11 @@
 #define __NR_syncfs             344
 #define __NR_sendmmsg		345
 #define __NR_setns		346
+#define __NR_ptree		347    /* added - red shirt team */
 
 #ifdef __KERNEL__
 
-#define NR_syscalls 347
+#define NR_syscalls 348    /* modified - red shirt team (old total was 347) */
 
 #define __ARCH_WANT_IPC_PARSE_VERSION
 #define __ARCH_WANT_OLD_READDIR

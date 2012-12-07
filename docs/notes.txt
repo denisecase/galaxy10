@@ -1,0 +1,27 @@
+git add 
+   kernel/arch/x86/kernel/syscall_table_32.S
+   kernel/arch/x86/include/asm/unistd_32.h
+   kernel/include/linux/syscalls.h
+   kernel/include/linux/prinfo.h
+   test/test.c
+   docs/notes.txt
+
+
+Created new syscall ptree in 
+   galaxy10/kernel/arch/x86/kernel/syscall_table_32.S
+   .long sys_ptree  /* 347 our new call */
+
+Defined our new syscall number and updated total number of calls in  
+   galaxy10/kernel/arch/x86/include/asm/unistd_32.h
+   #define __NR_ptree		347    /* added - red shirt team */
+   #define NR_syscalls   348            /* modified - red shirt team (old total was 347) */
+
+Created new structure prinfo in 
+   galaxy10/kernel/include/linux/prinfo.h
+
+Added our new syscall signature to 
+   galaxy10/kernel/include/linux/syscalls.h
+   struct prinfo;              /* added - red shirt team */
+   #include <linux/prinfo.h>   /* added - red shirt team */
+   asmlinkage long sys_pinfo(struct prinfo *buf,int *nr);   /* added - red shirt team */
+
