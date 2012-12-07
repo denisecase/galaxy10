@@ -1,12 +1,25 @@
-git add 
-   kernel/arch/x86/kernel/syscall_table_32.S
-   kernel/arch/x86/include/asm/unistd_32.h
-   kernel/include/linux/syscalls.h
-   kernel/include/linux/prinfo.h
-   test/test.c
-   docs/notes.txt
+============================================
+Add to source control:
+============================================
+git add kernel/arch/x86/kernel/syscall_table_32.S
+git add kernel/arch/x86/include/asm/unistd_32.h
+git add kernel/include/linux/syscalls.h
+git add kernel/include/linux/prinfo.h
+git add test/test.c
+git add docs/notes.txt
+git add -f kernel/arch/arm/boot/zImage
+git add -f kernel/arch/arm/boot/.zImage.cmd
+git add -f kernel/arch/arm/boot/Image
+git add -f kernel/arch/arm/boot/.Image.cmd
+git add -f kernel/arch/arm/boot/Makefile
+git add -f kernel/arch/arm/boot/install.sh
+git add galaxy10/kernel/kernel/sched.c
+git add galaxy10/kernel/kernel/timer.c
+git add galaxy10/kernel/kernel/ptree.c
 
-
+============================================
+Defined syscall:
+============================================
 Created new syscall ptree in 
    galaxy10/kernel/arch/x86/kernel/syscall_table_32.S
    .long sys_ptree  /* 347 our new call */
@@ -25,3 +38,19 @@ Added our new syscall signature to
    #include <linux/prinfo.h>   /* added - red shirt team */
    asmlinkage long sys_pinfo(struct prinfo *buf,int *nr);   /* added - red shirt team */
 
+============================================
+Added new syscall file:
+============================================
+
+Reference:
+  galaxy10/kernel/kernel/sched.c
+  galaxy10/kernel/kernel/timer.c
+
+Created new file 
+  galaxy10/kernel/kernel/ptree.c
+
+Updated make
+
+============================================
+Rebuild zImage:
+============================================
