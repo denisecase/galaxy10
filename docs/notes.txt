@@ -13,9 +13,12 @@ git add -f kernel/arch/arm/boot/Image
 git add -f kernel/arch/arm/boot/.Image.cmd
 git add -f kernel/arch/arm/boot/Makefile
 git add -f kernel/arch/arm/boot/install.sh
-git add galaxy10/kernel/kernel/sched.c
-git add galaxy10/kernel/kernel/timer.c
-git add galaxy10/kernel/kernel/ptree.c
+git add kernel/kernel/sched.c
+git add kernel/kernel/timer.c
+git add kernel/kernel/ptree.c
+git add kernel/include/linux/list.h
+git add kernel/include/linux/sched.h
+git add kernel/include/linux/timer.h
 
 ============================================
 Defined syscall:
@@ -46,10 +49,10 @@ Reference:
   galaxy10/kernel/kernel/sched.c
   galaxy10/kernel/kernel/timer.c
 
-Created new file 
+TODO: create a new file 
   galaxy10/kernel/kernel/ptree.c
 
-Updated make
+TODO: update make
 
 ============================================
 Rebuild zImage:
