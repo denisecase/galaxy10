@@ -1,24 +1,155 @@
 ============================================
+Setting up cis linux
+============================================
+Edit Makefile to specify location of cross-compiler:
+CROSS_COMPILE := /pub/CIS520/usr/arm/bin/arm-angstrom-linux-gnueabi-	
+
+Build correct config file:
+make samsung_p4wifi_defconfig
+
+============================================
+Building Kernel on cis linux 
+============================================
+
+Build zImage on cis linux for ARM platform
+From galaxy10/kernel:
+make -j4 ARCH=arm 
+
+Will create:
+galaxy10/kernel/arch/arm/boot/zImage
+
+============================================
+Compile test program:
+============================================
+In galaxy10/test:
+/pub/CIS520/usr/arm/bin/arm-angstrom-linux-gnueabi-gcc -static -o testcall testcall.c
+
+============================================
+Testing:
+============================================
+
+Android Debug Bridge (to actual & virtual devices)  
+http://developer.android.com/tools/help/adb.html
+	adb devices
+	adb shell
+
+Push and run program on emulator:
+	adb push /path/to/local/file /data/misc 
+	adb shell /data/misc/exe_name
+
+Remove from emulator:
+	adb pull /path/in/emulator /local/path
+
+Debug:
+arm-angstrom-linux-gnueabi-gdb exe_name
+(gdb) target remote localhost:1234
+>
+
+
+       adb pull /sdcard/download/boot.img
+
+Boot android emulator with:
+emulator  -avd <NameOfYourAVD> -kernel arch/arm/boot/zImage -ramdisk ramdisk.img -show-kernel
+
+============================================
+Notes:
+============================================
+On the last page of Project 3, the adb command 
+is used to push the executable to the /data folder. 
+This works fine on the emulator, but not directly 
+on the Galaxy Tab -- you can't push to 
+the /data folder directly. So, a simple 
+workaround is to push the test program, 
+say it's called mytest, to the /sdcard; e.g., 
+adb  push  mytest   /sdcard, then use dd from 
+the terminal on the Galaxy Tab to move it 
+over to /data; e.g., dd  if=/sdcard/mytest  
+of=/data/app/mytest -- you have to be super-user 
+(root) to do that; e.g., su. Then, you need 
+to change the file to be executable; e.g. 
+cd /data/app,  chown -R 755 mytest, and 
+finally run it; e.g., ./mytest. This is optional, 
+but I just wanted to fill in the details 
+if you are running the test 
+============================================
+Pushing to tablet
+============================================
+I posted a zip file called buildSignedBootFile.zip 
+to /pub/CIS520 to ease the creation of a signed zip 
+file that can be installed on your Galaxy Tab. 
+The included zip file is for JellyBean, but can 
+be easily modified for other versions. The files 
+are extracted to the kernel build folder, and 
+the top-level script, called doit, will do the work:
+
+1. cp arch/arm/boot/zImage  tmp  - copy the new zImage to the tmp folder,
+2. cp drivers/net/wireless/bcmdhd/dhd.ko  tmp/system/lib/modules - copy the wireless driver to the tmp folder,
+3. abootimg -u tmp/boot.img -k tmp/zImage, update the boot image to replace the zImage
+4. rm tmp/zImage, remove the temporary zImage (not really required),
+5. cd tmp
+    zip -u p4wifi-boot-112112.zip, update the zip file with the new boot image (boot.img)   and new wireless module, dhd.ko
+6. cd ..
+ java -classpath testsign.jar testsign tmp/p4wifi-boot-112112.zip tmp/p4wifi-boot-112112-signed.zip, create a "signed" zip file.
+
+Then, copy the zip file to your Galaxy Tab, and install the updated kernel.
+Note, this is optional, you can just test your code using the emulator, but this is just for fun.
+
+============================================
+Provided Test Code
+============================================
+#include <stdio.h>
+#include <unistd.h>
+#include <asm/unistd.h>
+#include <syscall.h>
+#include <sys/types.h>
+#include "prinfo.h"
+
+int main()
+{
+        struct prinfo procInfo[3];
+        int n = 3;
+        int p;
+        p = syscall(__NR_getpid);
+        printf("pid = %d\n", p);
+        printf("__NR_getpid = %d\n", __NR_getpid);
+        p = syscall(223,procInfo,&n);
+//      ptree(procInfo,&n);
+        printf("procInfo[0].pid = %d\n", procInfo[0].pid);
+        printf("procInfo[0].uid = %ld\n", procInfo[0].uid);
+        printf("p= %d\n", p);
+        return 0;
+};
+============================================
 Add to source control:
 ============================================
+from galaxy10:
+
+git add test/test.c
+git add test/testcall.c
+git add docs/notes.txt
+
+git add kernel/include/linux/prinfo.h 
+
 git add kernel/arch/x86/kernel/syscall_table_32.S
 git add kernel/arch/x86/include/asm/unistd_32.h
 git add kernel/include/linux/syscalls.h
-git add kernel/include/linux/prinfo.h
-git add test/test.c
-git add docs/notes.txt
-git add -f kernel/arch/arm/boot/zImage
-git add -f kernel/arch/arm/boot/.zImage.cmd
-git add -f kernel/arch/arm/boot/Image
-git add -f kernel/arch/arm/boot/.Image.cmd
-git add -f kernel/arch/arm/boot/Makefile
-git add -f kernel/arch/arm/boot/install.sh
+git add kernel/include/asm-generic/errno-base.h
+
 git add kernel/kernel/sched.c
 git add kernel/kernel/timer.c
 git add kernel/kernel/ptree.c
 git add kernel/include/linux/list.h
 git add kernel/include/linux/sched.h
 git add kernel/include/linux/timer.h
+
+Output:
+
+git add -f kernel/arch/arm/boot/zImage
+git add -f kernel/arch/arm/boot/.zImage.cmd
+git add -f kernel/arch/arm/boot/Image
+git add -f kernel/arch/arm/boot/.Image.cmd
+git add -f kernel/arch/arm/boot/Makefile
+git add -f kernel/arch/arm/boot/install.sh
 
 ============================================
 Defined syscall:
