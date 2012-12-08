@@ -39,6 +39,7 @@
 #include <linux/syscore_ops.h>
 #include <linux/version.h>
 #include <linux/ctype.h>
+#include <linux/prinfo.h>   /* added - red shirt team */
 
 #include <linux/compat.h>
 #include <linux/syscalls.h>
@@ -297,6 +298,35 @@ out_unlock:
 
 	return retval;
 }
+
+
+
+/*
+ * Our new ptree system call........................................................................... 
+ */
+SYSCALL_DEFINE2(ptree, struct prinfo __user *, buf, int *, nr)
+{
+
+	long retval = -EINVAL;
+
+	if (!buf || !nr )
+		return -EINVAL;
+
+	if (!access_ok(VERIFY_READ, buf, sizeof(struct prinfo)))
+		return -EFAULT;
+
+	rcu_read_lock();
+	read_lock(&tasklist_lock);
+
+	retval = 0;
+		
+	read_unlock(&tasklist_lock);
+	rcu_read_unlock();
+
+	return retval;
+}
+
+
 
 /**
  *	emergency_restart - reboot the system
