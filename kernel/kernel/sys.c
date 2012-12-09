@@ -300,29 +300,51 @@ out_unlock:
 }
 
 
-
 /*
  * Our new ptree system call........................................................................... 
  */
-SYSCALL_DEFINE2(ptree, struct prinfo __user *, buf, int *, nr)
+SYSCALL_DEFINE2(ptree, struct prinfo __user *, buf, int __user *, nr)
 {
 
-	long retval = -EINVAL;
+	long retval;
+	int n;
+	int sizeBuf;
+	int pid;
 
 	if (!buf || !nr )
 		return -EINVAL;
-
-	if (!access_ok(VERIFY_READ, buf, sizeof(struct prinfo)))
+ 	if (!access_ok(VERIFY_READ, buf, sizeof(struct prinfo)))
+		return -EFAULT;
+ 	if (!access_ok(VERIFY_READ, nr, sizeof(int)))
 		return -EFAULT;
 
+	// verify size is reasonable (make sure the supplied n is a positive value <15)
+	n = *nr;
+	if (n <0 || n > 15) {return -EINVAL;}
+
+	
+
+
+	sizeBuf = n * sizeof(struct prinfo);
+	char b[sizeBuf];
+ 
+	// get lock before beginning traversal; do not sleep, allocate mem, etc
 	rcu_read_lock();
 	read_lock(&tasklist_lock);
 
+
+   	for (int i = 0; i < n; i++) {
+		 pid = syscall(__NR_getpid);
+
+	}
+
+
+	// indicate success
 	retval = 0;
-		
+
+	// always release the lock before exiting 
 	read_unlock(&tasklist_lock);
 	rcu_read_unlock();
-
 	return retval;
 }
 

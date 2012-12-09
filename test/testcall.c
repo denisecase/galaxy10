@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <asm/unistd.h>
-#include <syscall.h>
+#include <syscall.h>  // added s? kernel/include/asm-generic has h
 #include <sys/types.h>
 #include "prinfo.h"
 
@@ -22,7 +22,7 @@ int main()
         printf("pid = %d\n", p);
         printf("__NR_getpid = %d\n", __NR_getpid);
 
-        p = syscall(223,procInfo,&n);
+        p = syscall(245,procInfo,&n);
 
 //      ptree(procInfo,&n);
 

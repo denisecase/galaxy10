@@ -13,6 +13,7 @@ Building Kernel on cis linux
 
 Build zImage on cis linux for ARM platform
 From galaxy10/kernel:
+make clean kernel
 make -j4 ARCH=arm 
 
 Will create:
@@ -142,7 +143,6 @@ git add kernel/arch/x86/include/asm/unistd_32.h << wrong
 git add kernel/kernel/sys.c
 git add kernel/kernel/sched.c
 git add kernel/kernel/timer.c
-git add kernel/kernel/ptree.c
 git add kernel/include/linux/list.h
 git add kernel/include/linux/sched.h
 git add kernel/include/linux/timer.h
