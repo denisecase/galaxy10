@@ -1,11 +1,12 @@
 ============================================
-Setting up cis linux
+Setting up cis linux - using orig 3.1 Honeycomb
 ============================================
 Edit Makefile to specify location of cross-compiler:
 CROSS_COMPILE := /pub/CIS520/usr/arm/bin/arm-angstrom-linux-gnueabi-	
 
 Build correct config file:
 make samsung_p4wifi_defconfig
+make versatile_defconfig
 
 ============================================
 Building Kernel on cis linux 
@@ -38,8 +39,11 @@ http://developer.android.com/tools/help/adb.html
 	adb shell
 
 Push and run program on emulator:
-	adb push /path/to/local/file /data/misc 
+	adb push /path/to/local/file /data/misc
+	 
 	adb shell /data/misc/exe_name
+
+
 
 Remove from emulator:
 	adb pull /path/in/emulator /local/path
@@ -51,10 +55,44 @@ arm-angstrom-linux-gnueabi-gdb exe_name
 
 
        adb pull /sdcard/download/boot.img
+===============================================
+From ADB Command Window at
+D:\KSU\KSU-CIS520\p3
+==================================================
+(start emulator)
+adb devices
+adb push take1/testcall /data/misc
+adb shell 
+#ls
+#su
+#cd data/misc
+#ls -all
+#chmod 755 testcall
+# ./testcall
+#ps (to check)
 
-Boot android emulator with:
-emulator  -avd <NameOfYourAVD> -kernel arch/arm/boot/zImage -ramdisk ramdisk.img -show-kernel
 
+==================================================
+From Command Window at
+C:\adt-bundle-windows\sdk\tools
+==================================================
+android create avd -n p3H -t "android-12" 
+emulator -avd p3H
+emulator  -avd p3H -kernel D:/_KSU/KSU-CIS520/p3/TAKE1/zImage 
+
+emulator -avd p3 
+emulator  -avd p3 -kernel D:/_KSU/KSU-CIS520/p3/TAKE1/zImage 
+emulator  -avd p3 -kernel D:/_KSU/KSU-CIS520/p3/TAKE1/zImage -ramdisk ramdisk.img -show-kernel
+
+
+Emulator: 
+set the resolution to 1280x800. 
+Name: GalaxyTab10.1wJB (for JellyBean), 
+Target: Android 4.1 - APILevel 16, 
+CPU/ABI: ARM (armeabi-v7a), 
+SD Card: Size: 128 MiB, 
+Resolution: 1280x800. 
+And it works fine, just kind of slow.
 ============================================
 Notes:
 ============================================
