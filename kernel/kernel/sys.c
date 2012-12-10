@@ -40,6 +40,7 @@
 #include <linux/version.h>
 #include <linux/ctype.h>
 #include <linux/prinfo.h>   /* added - red shirt team */
+#include <linux/sched.h>   /* added - red shirt team (for process states) */
 
 #include <linux/compat.h>
 #include <linux/syscalls.h>
@@ -299,17 +300,132 @@ out_unlock:
 	return retval;
 }
 
+/*
+ * Our new map call - returns either S, R, or Z given a process state..........
+ */
+char getStateChar(int i)
+{
+	char ans;
+
+	switch (i) {
+	case TASK_RUNNING:
+		ans = 'R';
+		break;
+	case TASK_INTERRUPTIBLE:  // sleeping
+		ans = 'S';
+		break;
+	case TASK_UNINTERRUPTIBLE:  // uniterruptible sleep
+		ans = 'S';
+		break;
+	case __TASK_STOPPED:  // stopped 
+		ans = 'S';
+		break;
+	case __TASK_TRACED:  // being traced 
+		ans = 'S';
+		break;
+	case EXIT_ZOMBIE:  
+		ans = 'Z';
+		break;
+	case EXIT_DEAD:  
+		ans = 'Z';
+		break;
+	default:
+		ans = '?';
+		break;
+	}
+	return ans;
+}
+/*
+ * Our new copyLine - converts a prinfo to a char array  ..........
+ */
+
+void copyLine(struct prinfo procInfo, char * line)
+{
+	char num[50];
+	char s;
+
+	strcat(line, procInfo.comm); //max 64 char
+	strcat(line, " ["); 
+	sprintf (num, "%lu" , procInfo.pid); 
+	strcat(line, num); 
+	strcat(line, "] "); 
+	s = getStateChar( procInfo.state); 
+	strcat(line, &s); 
+	strcat(line, ", "); 
+	sprintf (num, "%lu" , procInfo.parent_pid); 
+	strcat(line, num); 
+	strcat(line, ", "); 
+	sprintf (num, "%lu" , procInfo.first_child_pid);
+	strcat(line, num); 
+	strcat(line, ", "); 
+	sprintf (num, "%lu" , procInfo.next_sibling_pid);
+	strcat(line, num); 
+	strcat(line, ", "); 
+	sprintf (num, "%lu" , procInfo.uid);
+	strcat(line, num); 
+	strcat(line, " \n");
+}
 
 /*
- * Our new ptree system call........................................................................... 
+ * Our new recursive report process call....................................... 
+ */
+void reportProcess(struct task_struct *task, int * i, int n, char * line)
+{
+	char s;
+	struct task_struct *child;
+	struct task_struct *sib;
+	struct list_head list;
+	struct list_head *itemptr;
+	struct prinfo *p;
+	pid_t cpid;
+	pid_t spid;
+
+	s = getStateChar(task->state);
+		
+	list = task->children;
+	child = list_entry(&list, struct task_struct, children);
+	cpid = (child) ? child->pid : 0;
+
+	list = task->sibling;
+	sib = list_entry(&list, struct task_struct, sibling);
+	spid = (sib) ? sib->pid : 0;
+
+	printk("%s [%d] %c ",task->comm , task->pid, s);
+	printk("%d ",task->parent->pid );
+	printk("%d ",cpid );
+	printk("%d ",spid );
+	printk("%d ",task->cred->uid );
+
+	if (*i < n) {
+		p->state = s;	
+		p->pid = task->pid;
+		p->parent_pid = task->parent->pid;
+		p->first_child_pid = cpid;
+		p->next_sibling_pid = spid;
+		p->uid = task->cred->uid;
+		strcpy(p->comm,task->comm);
+		copyLine(*p, line);
+
+	}
+		
+	list_for_each(itemptr, &task->children) {
+		child = list_entry(itemptr, struct task_struct, children);
+		reportProcess(child, i, n, line);
+	}
+	i++;
+}
+
+
+/*
+ * Our new ptree system call................................................... 
  */
 SYSCALL_DEFINE2(ptree, struct prinfo __user *, buf, int __user *, nr)
 {
 
 	long retval;
 	int n;
-	int sizeBuf;
-	int pid;
+	int icount;
+	struct task_struct *task;
 
 	if (!buf || !nr )
 		return -EINVAL;
@@ -322,25 +438,21 @@ SYSCALL_DEFINE2(ptree, struct prinfo __user *, buf, int __user *, nr)
 	n = *nr;
 	if (n <0 || n > 15) {return -EINVAL;}
 
-	
-
-
-	sizeBuf = n * sizeof(struct prinfo);
-	char b[sizeBuf];
- 
 	// get lock before beginning traversal; do not sleep, allocate mem, etc
 	rcu_read_lock();
 	read_lock(&tasklist_lock);
 
-
-   	for (int i = 0; i < n; i++) {
-		 pid = syscall(__NR_getpid);
-
-	}
-
+	icount = 0;
+    	for_each_process(task)
+    	{	
+		reportProcess(task, &icount, n, buf);
+  	}
 
 	// indicate success
 	retval = 0;
+
+	// return total number of processes
+	*nr = icount;
 
 	// always release the lock before exiting 
 	read_unlock(&tasklist_lock);

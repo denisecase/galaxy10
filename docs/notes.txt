@@ -129,6 +129,7 @@ Add to source control:
 from galaxy10:
 
 git add test/test.c
+git add test/ut.c
 git add test/testcall.c
 git add docs/notes.txt
 
@@ -212,4 +213,15 @@ SYSCALL_DEFINE2(ptree, struct prinfo __user *, buf, int *, nr)
 Verify
 ============================================
 Rebuild zImage as above.
+============================================
+Map states
+============================================
 
+Need to map to S (sleeping) r(running) z(zombie)
+
+Process states (in UNIX) are: 
+
+R - runnable which means the process has done a context switch and has the kernel.
+S - sleeping which means the process is waiting on I/O completion (blocked), a pipe, memory, etc.
+T - process has been stopped - sent a SIGSTOP usually with ctrl/z
+Z - zombie - a process that has a process image in memory but no context, ie., not swappable.
