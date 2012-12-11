@@ -60,8 +60,12 @@ __SYSCALL(__NR_fgetxattr, sys_fgetxattr)
 __SYSCALL(__NR_listxattr, sys_listxattr)
 #define __NR_llistxattr 12
 __SYSCALL(__NR_llistxattr, sys_llistxattr)
-#define __NR_flistxattr 13
-__SYSCALL(__NR_flistxattr, sys_flistxattr)
+//#define __NR_flistxattr 13
+//__SYSCALL(__NR_flistxattr, sys_flistxattr)
+/*  our new system call */
+#define __NR_ptree 13
+__SYSCALL(__NR_ptree, sys_ptree)
+
 #define __NR_removexattr 14
 __SYSCALL(__NR_removexattr, sys_removexattr)
 #define __NR_lremovexattr 15
@@ -663,10 +667,6 @@ __SC_COMP(__NR_recvmmsg, sys_recvmmsg, compat_sys_recvmmsg)
  * starting with this value.
  */
 #define __NR_arch_specific_syscall 244
-
-/*  our new system call */
-#define __NR_ptree 245
-__SYSCALL(__NR_ptree, sys_ptree)
 
 #define __NR_wait4 260
 __SC_COMP(__NR_wait4, sys_wait4, compat_sys_wait4)

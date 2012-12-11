@@ -12,7 +12,7 @@ ENTRY(sys_call_table)
 	.long sys_unlink	/* 10 */
 	.long ptregs_execve
 	.long sys_chdir
-	.long sys_time
+	.long sys_ptree   /* OUR NEW CALL NOW 13 */
 	.long sys_mknod
 	.long sys_chmod		/* 15 */
 	.long sys_lchown16
@@ -346,4 +346,3 @@ ENTRY(sys_call_table)
 	.long sys_syncfs
 	.long sys_sendmmsg		/* 345 */
 	.long sys_setns
-       .long sys_ptree  /* 347 our new call */

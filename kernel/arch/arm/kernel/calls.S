@@ -22,7 +22,7 @@
 /* 10 */	CALL(sys_unlink)
 		CALL(sys_execve_wrapper)
 		CALL(sys_chdir)
-		CALL(sys_ptree) /* CALL(OBSOLETE(sys_time))	 used by libc4 */
+		CALL(sys_ptree) /* OUR NEW CALL not CALL(OBSOLETE(sys_time))used by libc4 */
 		CALL(sys_mknod)
 /* 15 */	CALL(sys_chmod)
 		CALL(sys_lchown16)

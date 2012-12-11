@@ -4,9 +4,10 @@ Setting up cis linux - using orig 3.1 Honeycomb
 Edit Makefile to specify location of cross-compiler:
 CROSS_COMPILE := /pub/CIS520/usr/arm/bin/arm-angstrom-linux-gnueabi-	
 
-Build correct config file:
-make samsung_p4wifi_defconfig
-make versatile_defconfig
+Build correct config file
+in galaxy10/kernel:
+make samsung_p4wifi_defconfig (if using tablet)
+make versatile_defconfig (if using emulator)
 
 ============================================
 Building Kernel on cis linux 
@@ -78,6 +79,7 @@ C:\adt-bundle-windows\sdk\tools
 ==================================================
 android create avd -n p3H -t "android-12" 
 emulator -avd p3H
+emulator  -avd p3H -kernel D:/_KSU/KSU-CIS520/p3/zImage 
 emulator  -avd p3H -kernel D:/_KSU/KSU-CIS520/p3/TAKE1/zImage 
 
 emulator -avd p3 
@@ -174,10 +176,11 @@ git add docs/notes.txt
 git add kernel/include/linux/prinfo.h 
 
 git add kernel/arch/x86/kernel/syscall_table_32.S
-git add kernel/include/asm-generic/unistd.h  << right
 git add kernel/include/linux/syscalls.h
 git add kernel/include/asm-generic/errno-base.h
+git add kernel/include/asm-generic/unistd.h  << right
 git add kernel/arch/x86/include/asm/unistd_32.h << wrong
+git add kernel/arch/arm/kernel/calls.S (used num 13)
 
 git add kernel/kernel/sys.c
 git add kernel/kernel/sched.c
@@ -200,18 +203,30 @@ Defined syscall:
 ============================================
 Defined new syscall ptree in 
    galaxy10/kernel/arch/x86/kernel/syscall_table_32.S
-   .long sys_ptree  /* 347 our new call */
+   NOT .long sys_ptree  /* 347 our new call */
+   .long sys_ptree   /* OUR NEW CALL NOW 13 */
 
 Defined our new syscall number and updated total number of calls in  
-   galaxy10/kernel/arch/x86/include/asm/unistd_32.h
-   #define __NR_ptree		347    /* added - red shirt team */
-   #define NR_syscalls   348            /* modified - red shirt team (old total was 347) */
+   galaxy10/kernel/include/asm/unistd_32.h
+   #define __NR_ptree		 13  /*OUR NEW CALL NOW 13*/
+   NOT #define __NR_ptree		347    /* added - red shirt team */
+   NOT #define NR_syscalls   348            /* modified - red shirt team (old total was 347) */
 
 UPDATED: Defined our new syscall number and updated total number of calls in  
-   galaxy10/kernel/arch/x86/include/asm-generic/unistd.h
-   /*  our new system call */
-   #define __NR_ptree 245
-   __SYSCALL(__NR_ptree, sys_ptree)
+   galaxy10/kernel/include/asm-generic/unistd.h
+  NOT  /*  our new system call */
+  NOT  #define __NR_ptree 245
+  NOT  __SYSCALL(__NR_ptree, sys_ptree)
+//#define __NR_flistxattr 13
+//__SYSCALL(__NR_flistxattr, sys_flistxattr)
+/*  our new system call */
+#define __NR_ptree 13
+__SYSCALL(__NR_ptree, sys_ptree)
+
+
+UPDATED: used obsolete number 13
+galaxy10/kernel/arch/arm/kernel/calls.S:
+CALL(sys_ptree) /* OUR NEW CALL not CALL(OBSOLETE(sys_time))used by libc4 */
 
 Created new structure prinfo in 
    galaxy10/kernel/include/linux/prinfo.h
