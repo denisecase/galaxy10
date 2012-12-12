@@ -17,7 +17,7 @@ kernel/include/linux/prinfo.h
 kernel/include/linux/syscalls.h 
 kernel/kernel/sys.c 
 
-The following test programs were used:
+The following test programs were created:
 
 test/testright.c - used to call the system call from android
 test/methodtest.c  - used to test method calls offline
@@ -39,7 +39,8 @@ source. We were able to successfully install a
 new signed kernel zipfile to the tablet's sdcard, but
 the boot was not fully successful.
 
-Notes on the process are included below. 
+Notes on the process to develop and attempt to 
+test our new system call are included below. 
 
 ============================================
 Extract JB
