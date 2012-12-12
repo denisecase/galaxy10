@@ -1,0 +1,7 @@
+cp ../arch/arm/boot/zImage tmp
+cp ../drivers/net/wireless/bcmdhd/dhd.ko tmp/system/lib/modules
+cd tmp
+./abootimg -u boot.img -k zImage
+zip -u p4wifi-boot-120612.zip
+cd ..
+java -classpath testsign.jar testsign tmp/p4wifi-boot-120612.zip tmp/p4wifi-boot-120612-signed2.zip
