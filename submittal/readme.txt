@@ -194,8 +194,14 @@ git add -f android_kernel_samsung_p4-jellybean/arch/arm/kernel/calls.S
 git add android_kernel_samsung_p4-jellybean//include/linux/syscalls.h
 git add android_kernel_samsung_p4-jellybean/kernel/sys.c
 git add submittal/*.*
-
-Copied for submittal
+git add android_kernel_samsung_p4-jellybean/P7510/abootimg
+git add android_kernel_samsung_p4-jellybean/P7510/abootimg-pack-initrd
+git add android_kernel_samsung_p4-jellybean/P7510/abootimg-unpack-initrd
+git add android_kernel_samsung_p4-jellybean/P7510/config
+git add android_kernel_samsung_p4-jellybean/P7510/doit
+git add android_kernel_samsung_p4-jellybean/P7510/tmp/boot.img
+git add android_kernel_samsung_p4-jellybean/P7510/tmp/initrd.img
+git add android_kernel_samsung_p4-jellybean/P7510/tmp/*.zip
 
 cp kernel/arch/arm/kernel/calls.S submittal
 cp kernel/include/asm-generic/unistd.h submittal
