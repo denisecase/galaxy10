@@ -11,16 +11,16 @@ Source Code
 ====================================================
 The following kernel files were added or modified:
 
-kernel/arch/arm/kernel/calls.S 
-kernel/include/asm-generic/unistd.h 
-kernel/include/linux/prinfo.h  
-kernel/include/linux/syscalls.h 
-kernel/kernel/sys.c 
+ kernel/arch/arm/kernel/calls.S 
+ kernel/include/asm-generic/unistd.h 
+ kernel/include/linux/prinfo.h  
+ kernel/include/linux/syscalls.h 
+ kernel/kernel/sys.c 
 
 The following test programs were created:
 
-test/testright.c - used to call the system call from android
-test/methodtest.c  - used to test method calls offline
+ test/testright.c - used to call the system call from android
+ test/methodtest.c  - used to test method calls offline
 
 The first test program was helpful for developing as there
 where some difficulties encountered getting a true
@@ -28,7 +28,14 @@ android test environment established.
 
 After several days, neither the emulator or the 
 actual tablet were able to correctly open a new 
-kernel built from the original source.  
+kernel built from the original source; we have
+been unable to field test our updated source code. The 
+new kernel compiles well with no errors or warnings 
+(related to our content). 
+
+The new prinfo.h file describes the given structure and
+the majority of the coding was done in sys.c - specific
+code changes are described in sections below. 
 
 ====================================================
 Two Versions
@@ -342,6 +349,35 @@ char getStateChar(long i)
 		break;
 	}
 	return ans;
+}
+============================================
+Coverting the procInfo struct to string
+============================================
+void copyLine(struct prinfo procInfo, char * line)
+{
+	char num[50];
+	char s;
+
+	strcat(line, procInfo.comm); //max 64 char
+	strcat(line, " ["); 
+	sprintf (num, "%lu" , procInfo.pid); 
+	strcat(line, num); 
+	strcat(line, "] "); 
+	s = getStateChar( procInfo.state); 
+	strcat(line, &s); 
+	strcat(line, ", "); 
+	sprintf (num, "%lu" , procInfo.parent_pid); 
+	strcat(line, num); 
+	strcat(line, ", "); 
+	sprintf (num, "%lu" , procInfo.first_child_pid);
+	strcat(line, num); 
+	strcat(line, ", "); 
+	sprintf (num, "%lu" , procInfo.next_sibling_pid);
+	strcat(line, num); 
+	strcat(line, ", "); 
+	sprintf (num, "%lu" , procInfo.uid);
+	strcat(line, num); 
+	strcat(line, " \n");
 }
 
 ============================================
